@@ -2,7 +2,7 @@
 
 [![built with nix](https://builtwithnix.org/badge.svg)](https://builtwithnix.org)
 
-This is a collection of some observability tools packaged for Nix and accompanied by modules.
+This is a collection of some observability tools packaged as Nix Flakes and accompanied by modules.
 
 ## Available packages
 
