@@ -17,6 +17,18 @@ nix build .#infrastructure-agent
 
 ## Available modules
 
+It might be possible that the modules defined here reference packages that are not yet present in `nixpkgs`. If you encounter this problem, add this flake's default overlay to your `nixpkgs.overlays` config:
+
+```nix
+{
+  nixpkgs = {
+    overlays = [
+      inputs.nixobs.overlays.default
+    ];
+  };
+}
+```
+
 ### NixOS
 
 #### Infrastructure agent `systemd` service
