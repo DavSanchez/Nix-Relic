@@ -26,5 +26,9 @@
     nixosModules = import ./modules/nixos;
 
     darwinModules = import ./modules/darwin;
+
+    overlays = [
+      (self: super: import ./pkgs {pkgs = self;})
+    ];
   };
 }
