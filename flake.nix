@@ -27,8 +27,8 @@
 
     darwinModules = import ./modules/darwin;
 
-    overlays = [
-      (self: super: import ./pkgs {pkgs = self;})
-    ];
+    overlays = {
+      default = self: super: import ./pkgs {pkgs = self;};
+    };
   };
 }
