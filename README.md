@@ -37,12 +37,7 @@ It might be possible that the modules defined here reference packages that are n
 {
   services.newrelic-infra = {
     enable = true;
-
-    # If you do not want to expose the config you can always do `config = import <PATH>`
-    # and not checkout the file.
-    config = {
-      license_key = "ABC";
-    };
+    config = ./newrelic-infra.yml;
   };
 }
 ```
@@ -55,11 +50,7 @@ It might be possible that the modules defined here reference packages that are n
 {
   services.newrelic-infra = {
     enable = true;
-    # If you do not want to expose the config you can always do `config = import <PATH>`
-    # and not checkout the file.
-    config = {
-      license_key = "ABC";
-    };
+    config = ./newrelic-infra.yml; 
     logFile = ./path/to/file.log;
     errLogFile = ./path/to/errfile.log;
   };
