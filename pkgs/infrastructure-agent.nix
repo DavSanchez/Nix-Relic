@@ -9,16 +9,16 @@
 }:
 buildGoModule rec {
   pname = "infrastructure-agent";
-  version = "1.42.0";
+  version = "1.42.1";
 
   src = fetchFromGitHub {
     owner = "newrelic";
     repo = "infrastructure-agent";
     rev = version;
-    hash = "sha256-0eq4igAqtzkb2bsNWPZCOeKd1X3mL3z5BiIs01BJPu8=";
+    hash = "sha256-TlgHfe5Gn1L9hULLFfR2RUZTHrw6i2qi9hV/tzYiuhI=";
   };
 
-  vendorHash = "sha256-YOdNoUkPAGknv82RQRk36Be8uGfkrhNETJv54jnHAB8=";
+  vendorHash = "sha256-BtaLSLuwICD6kRaQgMdVIptiRKlex8p3bOlpu9fZno0=";
 
   buildInputs = lib.optionals stdenv.isDarwin [
     IOKit
