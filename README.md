@@ -1,8 +1,8 @@
-# NixObs
+# Nix Relic
 
 [![built with nix](https://builtwithnix.org/badge.svg)](https://builtwithnix.org)
 
-This is a collection of some observability tools packaged as Nix Flakes and accompanied by modules.
+This is a collection of some observability tools from New Relic packaged as Nix Flakes and accompanied by modules.
 
 ## Available packages
 
@@ -17,13 +17,13 @@ nix build .#infrastructure-agent
 
 ## Available modules
 
-It might be possible that the modules defined here reference packages that are not yet present in `nixpkgs`. If you encounter this problem, add this flake's default overlay to your `nixpkgs.overlays` config:
+It might be possible that the modules defined here reference packages that are not yet present in `nixpkgs`. If you encounter this problem, add this flake's default overlay to your `nixpkgs.overlays` config. Assuming you have named this flake input as `nix-relic`:
 
 ```nix
 {
   nixpkgs = {
     overlays = [
-      inputs.nixobs.overlays.default
+      inputs.nix-relic.overlays.default
     ];
   };
 }
