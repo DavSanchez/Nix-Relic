@@ -9,21 +9,28 @@
 }:
 buildGoModule rec {
   pname = "infrastructure-agent";
-  version = "1.42.1";
+  version = "1.47.1";
 
   src = fetchFromGitHub {
     owner = "newrelic";
     repo = "infrastructure-agent";
     rev = version;
-    hash = "sha256-TlgHfe5Gn1L9hULLFfR2RUZTHrw6i2qi9hV/tzYiuhI=";
-  };
+    hash = "sha256-+hgAMfMMbZQiqO8Sn+OtJDOCc6iZRWlQMH/q6EDGfXk=";
+};
 
-  vendorHash = "sha256-BtaLSLuwICD6kRaQgMdVIptiRKlex8p3bOlpu9fZno0=";
+  vendorHash = "sha256-izjfwwKHR0tSuO+bjU5NT8r+uu8EhWl20GIfMjytNHk=";
 
   buildInputs = lib.optionals stdenv.isDarwin [
-    IOKit
-    CoreFoundation
-    Security
+    # darwin.apple_sdk.frameworks.Cocoa
+    darwin.apple_sdk.frameworks.Kernel
+  ] ++ lib.optionals stdenv.isLinux [
+    # xorg.libX11
+    # xorg.libXcursor
+    # xorg.libXi
+    # xorg.libXinerama
+    # xorg.libXrandr
+
+    fluent-bit
   ];
 
   ldflags = [
