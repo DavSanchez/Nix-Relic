@@ -15,12 +15,10 @@
       "aarch64-darwin"
       "x86_64-darwin"
     ];
+    pkgsFor = forAllSystems (system: import nixpkgs {inherit system;});
   in {
     packages = forAllSystems (
-      system: let
-        pkgs = nixpkgs.legacyPackages.${system};
-      in
-        import ./pkgs {inherit pkgs;}
+      system: import ./pkgs {pkgs = pkgsFor.${system};}
     );
 
     nixosModules = import ./modules/nixos;
