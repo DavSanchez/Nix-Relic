@@ -20,25 +20,28 @@ buildGoModule rec {
 
   vendorHash = "sha256-ZLARDZltb7ZPt4iLzHkhUesCqGPD88uEJMkeGzVf7Rc=";
 
-  # Tests perform compilation so they pull external sources, which is not allowed at this point
-  doCheck = false;
-
   ldflags = [
     "-s"
     "-w"
   ];
 
-  installPhase = ''
-    # Same as done in buildGoModule, but renaming the binary
+  nativeBuildInputs = with pkgs; [
+    gnumake
+  ];
 
+  buildPhase = ''
+    runHook preBuild
+    
+    make ocb
+
+    runHook postBuild
+  '';
+
+  installPhase = ''
     runHook preInstall
 
-    mkdir -p $out
-    dir="$GOPATH/bin"
-    [ -e "$dir" ] && cp -r $dir $out
-
-    bin_name="builder"
-    mv $out/bin/$bin_name $out/bin/${pname}
+    mkdir -p $out/bin
+    cp ../../bin/ocb_${go.GOOS}_${go.GOARCH} $out/bin/${pname}
 
     runHook postInstall
   '';
