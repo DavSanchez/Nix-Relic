@@ -20,11 +20,6 @@ buildGoModule rec {
 
   vendorHash = "sha256-ZLARDZltb7ZPt4iLzHkhUesCqGPD88uEJMkeGzVf7Rc=";
 
-  ldflags = [
-    "-s"
-    "-w"
-  ];
-
   nativeBuildInputs = with pkgs; [
     gnumake
   ];
