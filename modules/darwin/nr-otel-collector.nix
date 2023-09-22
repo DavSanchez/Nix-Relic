@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkEnableOption mkIf mkOption types mdDoc getExe;
-  cfg = config.services.newrelic-infra;
+  cfg = config.services.nr-otel-collector;
   settingsFormat = pkgs.formats.yaml {};
 in {
   options.services.nr-otel-collector = {
@@ -34,7 +34,7 @@ in {
       description = mdDoc "Path to the log file";
     };
 
-    errLogFile = lib.mkOption {
+    errLogFile = mkOption {
       type = types.path;
       default = "/var/log/nr-otel-collector/nr-otel-collector.stderr.log";
       description = mdDoc "Path to the error log file";
