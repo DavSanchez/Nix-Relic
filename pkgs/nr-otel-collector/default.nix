@@ -8,7 +8,7 @@
 }: let
   distName = "nr-otel-collector";
   distVersion = "0.4.0";
-  generated-sources = pkgs.callPackage ./sources.nix { inherit ocb;};
+  generated-sources = pkgs.callPackage ./sources.nix {inherit ocb;};
 in
   buildGoModule {
     pname = distName;

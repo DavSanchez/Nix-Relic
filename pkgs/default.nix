@@ -2,5 +2,5 @@
 {pkgs}: rec {
   infrastructure-agent = pkgs.callPackage ./infrastructure-agent.nix {};
   ocb = pkgs.callPackage ./ocb.nix {};
-  nr-otel-collector = pkgs.callPackage ./nr-otel-collector { inherit ocb; };
+  nr-otel-collector = pkgs.callPackage ./nr-otel-collector {inherit ocb;};
 }
