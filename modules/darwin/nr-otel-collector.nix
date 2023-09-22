@@ -48,9 +48,12 @@ in {
         then settingsFormat.generate "config.yaml" cfg.settings
         else cfg.configFile;
     in {
-      command = "${getExe pkgs.nr-otel-collector} --config=file:${conf}";
+      path = [ pkgs.nr-otel-collector ];
 
       serviceConfig = {
+        ProgramArguments = [ "${getExe pkgs.nr-otel-collector}" "--config=file:${conf}" ];
+        KeepAlive = true;
+        RunAtLoad = true;
         StandardErrorPath = cfg.errLogFile;
         StandardOutPath = cfg.logFile;
       };

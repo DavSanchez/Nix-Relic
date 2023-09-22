@@ -48,9 +48,12 @@ in {
         then settingsFormat.generate "config.yaml" cfg.settings
         else cfg.configFile;
     in {
-      command = "${pkgs.infrastructure-agent}/bin/newrelic-infra-service -config ${conf}";
+      path = [ pkgs.infrastructure-agent ];
 
       serviceConfig = {
+        ProgramArguments = [ "${pkgs.infrastructure-agent}/bin/newrelic-infra-service" "-config" "${conf}" ];
+        KeepAlive = true;
+        RunAtLoad = true;
         StandardErrorPath = cfg.errLogFile;
         StandardOutPath = cfg.logFile;
       };
