@@ -4,7 +4,7 @@
   config,
   ...
 }: let
-  inherit (lib) mkEnableOption mkIf mkOption types;
+  inherit (lib) mkEnableOption mkIf mkOption types mdDoc;
 
   cfg = config.services.newrelic-infra;
   settingsFormat = pkgs.formats.yaml {};
@@ -16,7 +16,7 @@ in {
     settings = mkOption {
       type = settingsFormat.type;
       default = {};
-      description = ''
+      description = mdDoc ''
         Specify the configuration for the Infra Agent in Nix.
 
         See <https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings> for available options.
@@ -25,7 +25,7 @@ in {
     configFile = mkOption {
       type = types.nullOr types.path;
       default = null;
-      description = ''
+      description = mdDoc ''
         Specify a path to a configuration file that the Infrastructure Agent should use.
       '';
     };

@@ -4,7 +4,7 @@
   config,
   ...
 }: let
-  inherit (lib) mkEnableOption mkIf mkOption types getExe;
+  inherit (lib) mkEnableOption mkIf mkOption types mdDoc getExe;
   cfg = config.services.newrelic-infra;
   settingsFormat = pkgs.formats.yaml {};
 in {
@@ -14,7 +14,7 @@ in {
     settings = mkOption {
       type = settingsFormat.type;
       default = {};
-      description = ''
+      description = mdDoc ''
         Specify the configuration for Opentelemetry Collector in Nix.
 
         See <https://opentelemetry.io/docs/collector/configuration> for available options.
@@ -23,7 +23,7 @@ in {
     configFile = mkOption {
       type = types.nullOr types.path;
       default = null;
-      description = ''
+      description = mdDoc ''
         Specify a path to a configuration file that Opentelemetry Collector should use.
       '';
     };
@@ -31,13 +31,13 @@ in {
     logFile = mkOption {
       type = types.path;
       default = "/var/log/nr-otel-collector/nr-otel-collector.log";
-      description = "Path to the log file";
+      description = mdDoc "Path to the log file";
     };
 
     errLogFile = lib.mkOption {
       type = types.path;
       default = "/var/log/nr-otel-collector/nr-otel-collector.stderr.log";
-      description = "Path to the error log file";
+      description = mdDoc "Path to the error log file";
     };
   };
 
