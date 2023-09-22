@@ -42,7 +42,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    launchd.daemons.newrelic-infra = let
+    launchd.daemons.nr-otel-collector = let
       conf =
         if cfg.configFile == null
         then settingsFormat.generate "config.yaml" cfg.settings
