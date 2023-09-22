@@ -4,39 +4,39 @@
   config,
   ...
 }: let
-  inherit (lib) mkEnableOption mkIf mkOption types;
+  inherit (lib) mkEnableOption mkIf mkOption types getExe;
   cfg = config.services.newrelic-infra;
   settingsFormat = pkgs.formats.yaml {};
 in {
-  options.services.newrelic-infra = {
-    enable = mkEnableOption "newrelic-infra service";
+  options.services.nr-otel-collector = {
+    enable = mkEnableOption "New Relic distribution for OpenTelemetry Collector service";
 
     settings = mkOption {
       type = settingsFormat.type;
       default = {};
       description = ''
-        Specify the configuration for the Infra Agent in Nix.
+        Specify the configuration for Opentelemetry Collector in Nix.
 
-        See <https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings> for available options.
+        See <https://opentelemetry.io/docs/collector/configuration> for available options.
       '';
     };
     configFile = mkOption {
       type = types.nullOr types.path;
       default = null;
       description = ''
-        Specify a path to a configuration file that the Infrastructure Agent should use.
+        Specify a path to a configuration file that Opentelemetry Collector should use.
       '';
     };
 
     logFile = mkOption {
       type = types.path;
-      default = "/var/log/newrelic-infra/newrelic-infra.log";
+      default = "/var/log/nr-otel-collector/nr-otel-collector.log";
       description = "Path to the log file";
     };
 
     errLogFile = lib.mkOption {
       type = types.path;
-      default = "/var/log/newrelic-infra/newrelic-infra.stderr.log";
+      default = "/var/log/nr-otel-collector/nr-otel-collector.stderr.log";
       description = "Path to the error log file";
     };
   };
@@ -48,7 +48,7 @@ in {
         then settingsFormat.generate "config.yaml" cfg.settings
         else cfg.configFile;
     in {
-      command = "${pkgs.infrastructure-agent}/bin/newrelic-infra-service -config ${conf}";
+      command = "${getExe pkgs.nr-otel-collector} --config=file:${conf}";
 
       serviceConfig = {
         StandardErrorPath = cfg.errLogFile;

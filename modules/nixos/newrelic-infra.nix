@@ -4,19 +4,34 @@
   config,
   ...
 }: let
+  inherit (lib) mkEnableOption mkIf mkOption types;
+
   cfg = config.services.newrelic-infra;
+  settingsFormat = pkgs.formats.yaml {};
 in {
   options.services.newrelic-infra = {
     enable = lib.mkEnableOption "newrelic-infra service";
-    config = lib.mkOption {
-      type = lib.types.path;
-      example = "./newrelic-infra.yml";
-      description = "Infrastructure Agent configuration. Will be placed in `/etc/newrelic-infra.yml`. Refer to <https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings> for details on supported values.";
-    };
     # TODO: withIntegrations = [ drv drv ... ];
+
+    settings = mkOption {
+      type = settingsFormat.type;
+      default = {};
+      description = ''
+        Specify the configuration for the Infra Agent in Nix.
+
+        See <https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings> for available options.
+      '';
+    };
+    configFile = mkOption {
+      type = types.nullOr types.path;
+      default = null;
+      description = ''
+        Specify a path to a configuration file that the Infrastructure Agent should use.
+      '';
+    };
   };
 
-  config = lib.mkIf cfg.enable {
+  config = mkIf cfg.enable {
     systemd.services.newrelic-infra = {
       description = "New Relic Infrastructure Agent";
 
@@ -26,10 +41,15 @@ in {
         "network.target"
       ];
 
-      serviceConfig = {
+      serviceConfig = let
+        conf =
+          if cfg.configFile == null
+          then settingsFormat.generate "config.yaml" cfg.settings
+          else cfg.configFile;
+      in {
         RuntimeDirectory = "newrelic-infra";
         Type = "simple";
-        ExecStart = "${pkgs.infrastructure-agent}/bin/newrelic-infra-service";
+        ExecStart = "${pkgs.infrastructure-agent}/bin/newrelic-infra-service -config ${conf}";
         MemoryMax = "1G";
         Restart = "always";
         RestartSec = 20;
@@ -43,7 +63,5 @@ in {
 
       wantedBy = ["multi-user.target"];
     };
-
-    environment.etc."newrelic-infra.yml".source = cfg.config;
   };
 }
