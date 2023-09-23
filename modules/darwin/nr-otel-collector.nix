@@ -4,54 +4,54 @@
   config,
   ...
 }: let
-  inherit (lib) mkEnableOption mkIf mkOption types mdDoc;
-  cfg = config.services.newrelic-infra;
+  inherit (lib) mkEnableOption mkIf mkOption types mdDoc getExe;
+  cfg = config.services.nr-otel-collector;
   settingsFormat = pkgs.formats.yaml {};
 in {
-  options.services.newrelic-infra = {
-    enable = mkEnableOption "newrelic-infra service";
+  options.services.nr-otel-collector = {
+    enable = mkEnableOption "New Relic distribution for OpenTelemetry Collector service";
 
     settings = mkOption {
       type = settingsFormat.type;
       default = {};
       description = mdDoc ''
-        Specify the configuration for the Infra Agent in Nix.
+        Specify the configuration for Opentelemetry Collector in Nix.
 
-        See <https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings> for available options.
+        See <https://opentelemetry.io/docs/collector/configuration> for available options.
       '';
     };
     configFile = mkOption {
       type = types.nullOr types.path;
       default = null;
       description = mdDoc ''
-        Specify a path to a configuration file that the Infrastructure Agent should use.
+        Specify a path to a configuration file that Opentelemetry Collector should use.
       '';
     };
 
     logFile = mkOption {
       type = types.path;
-      default = "/var/log/newrelic-infra/newrelic-infra.log";
+      default = "/var/log/nr-otel-collector/nr-otel-collector.log";
       description = mdDoc "Path to the log file";
     };
 
-    errLogFile = lib.mkOption {
+    errLogFile = mkOption {
       type = types.path;
-      default = "/var/log/newrelic-infra/newrelic-infra.stderr.log";
+      default = "/var/log/nr-otel-collector/nr-otel-collector.stderr.log";
       description = mdDoc "Path to the error log file";
     };
   };
 
   config = mkIf cfg.enable {
-    launchd.daemons.newrelic-infra = let
+    launchd.daemons.nr-otel-collector = let
       conf =
         if cfg.configFile == null
         then settingsFormat.generate "config.yaml" cfg.settings
         else cfg.configFile;
     in {
-      path = [ pkgs.infrastructure-agent ];
+      # path = [ pkgs.nr-otel-collector pkgs.ps ];
 
       serviceConfig = {
-        ProgramArguments = [ "${pkgs.infrastructure-agent}/bin/newrelic-infra-service" "-config" "${conf}" ];
+        ProgramArguments = [ "${getExe pkgs.nr-otel-collector}" "--config=file:${conf}" ];
         KeepAlive = true;
         RunAtLoad = true;
         StandardErrorPath = cfg.errLogFile;
