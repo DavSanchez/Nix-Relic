@@ -48,7 +48,7 @@ in {
         then settingsFormat.generate "config.yaml" cfg.settings
         else cfg.configFile;
     in {
-      path = [ pkgs.nr-otel-collector pkgs.ps ];
+      # path = [ pkgs.nr-otel-collector pkgs.ps ];
 
       serviceConfig = {
         ProgramArguments = [ "${getExe pkgs.nr-otel-collector}" "--config=file:${conf}" ];
