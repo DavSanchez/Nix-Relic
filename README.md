@@ -3,6 +3,8 @@
 
 # Nix Relic
 
+[![Build tests](https://github.com/DavSanchez/Nix-Relic/actions/workflows/build.yaml/badge.svg)](https://github.com/DavSanchez/Nix-Relic/actions/workflows/build.yaml)
+
 [![built with nix](https://builtwithnix.org/badge.svg)](https://builtwithnix.org)
 
 This is a collection of some observability tools from New Relic packaged as Nix Flakes and accompanied by modules.
@@ -16,6 +18,24 @@ nix shell .#infrastructure-agent
 
 # or build the package and find the outputs in ./result
 nix build .#infrastructure-agent
+```
+
+### OpenTelemetry Collector Builder (OCB)
+
+```sh
+nix shell .#ocb
+
+# or build the package and find the outputs in ./result
+nix build .#ocb
+```
+
+### New Relic Distribution for Open Telemetry Collector
+
+```sh
+nix shell .#nr-otel-collector
+
+# or build the package and find the outputs in ./result
+nix build .#nr-otel-collector
 ```
 
 ## Available modules
