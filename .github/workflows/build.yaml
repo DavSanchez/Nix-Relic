@@ -1,0 +1,36 @@
+---
+name: "Build tests"
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+jobs:
+  checks:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v22
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable cache for Nix
+        uses: DeterminateSystems/magic-nix-cache-action@v2
+
+      - name: Run Nix checks
+        run: nix flake check
+
+      - name: Build Infrastructure Agent with Nix
+        run: nix build --print-out-paths ".#infrastructure-agent"
+
+      - name: Build OCB with Nix
+        run: nix build --print-out-paths ".#ocb"
+
+      - name: Build New Relic OTel Collector with Nix
+        run: nix build --print-out-paths ".#nr-otel-collector"
