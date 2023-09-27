@@ -1,3 +1,6 @@
+
+[<img src="./nix-relic.png" alt="logo" width="200">](https://github.com/DavSanchez/Nix-Relic)
+
 # Nix Relic
 
 [![built with nix](https://builtwithnix.org/badge.svg)](https://builtwithnix.org)
@@ -37,12 +40,12 @@ It might be possible that the modules defined here reference packages that are n
 {
   services.newrelic-infra = {
     enable = true;
-    config = ./newrelic-infra.yml;
+    configFile = ./newrelic-infra.yml;
   };
 }
 ```
 
-### Darwin
+### Darwin (macOS)
 
 #### Infrastructure agent `launchd` daemon
 
@@ -50,7 +53,7 @@ It might be possible that the modules defined here reference packages that are n
 {
   services.newrelic-infra = {
     enable = true;
-    config = ./newrelic-infra.yml; 
+    configFile = ./newrelic-infra.yml; 
     logFile = ./path/to/file.log;
     errLogFile = ./path/to/errfile.log;
   };
