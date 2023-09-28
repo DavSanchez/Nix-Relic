@@ -7,7 +7,7 @@
 
 [![built with nix](https://builtwithnix.org/badge.svg)](https://builtwithnix.org)
 
-This is a collection of some observability tools from New Relic packaged as Nix Flakes and accompanied by modules.
+This is a collection of some infrastructure observability tools from New Relic packaged as Nix Flakes and accompanied by NixOS and nix-darwin modules.
 
 ## Available packages
 
@@ -31,7 +31,7 @@ nix shell github:DavSanchez/Nix-Relic#ocb
 nix build github:DavSanchez/Nix-Relic#ocb
 ```
 
-### New Relic Distribution for Open Telemetry Collector
+### New Relic Distribution for OpenTelemetry Collector
 
 ```sh
 # Make it available in your shell
@@ -49,7 +49,7 @@ It might be possible that the modules defined here reference packages that are n
 {
   nixpkgs = {
     overlays = [
-      inputs.nix-relic.overlays.default
+      inputs.nix-relic.overlays.additions
     ];
   };
 }
@@ -68,6 +68,20 @@ It might be possible that the modules defined here reference packages that are n
 }
 ```
 
+#### Use the New Relic Distribution for OpenTelemetry Collector
+
+The module is already provided by NixOS, we only need to change it so it uses our New Relic Distribution package:
+
+```nix
+{
+  services.opentelemetry-collector = {
+    enable = true;
+    package = pkgs.nr-otel-collector;
+    configFile = ./nr-otel-collector.yaml;
+  };
+}
+```
+
 ### Darwin (macOS)
 
 #### Infrastructure agent `launchd` daemon
@@ -77,6 +91,20 @@ It might be possible that the modules defined here reference packages that are n
   services.newrelic-infra = {
     enable = true;
     configFile = ./newrelic-infra.yml; 
+    logFile = ./path/to/file.log;
+    errLogFile = ./path/to/errfile.log;
+  };
+}
+```
+
+
+#### New Relic Distribution for OpenTelemetry Collector `launchd` daemon
+
+```nix
+{
+  services.nr-otel-collector = {
+    enable = true;
+    configFile = ./nr-otel-collector.yml; 
     logFile = ./path/to/file.log;
     errLogFile = ./path/to/errfile.log;
   };
