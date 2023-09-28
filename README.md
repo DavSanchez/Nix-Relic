@@ -70,13 +70,13 @@ It might be possible that the modules defined here reference packages that are n
 
 #### Use the New Relic Distribution for OpenTelemetry Collector
 
-The module is already provided by NixOS, we only need to change it so it uses our New Relic Distribution package:
+A module for setting up an OpenTelemetry collector is already provided by NixOS, we only need to change it so it uses our New Relic Distribution package:
 
 ```nix
 {
   services.opentelemetry-collector = {
     enable = true;
-    package = pkgs.nr-otel-collector;
+    package = pkgs.nr-otel-collector; # Here!
     configFile = ./nr-otel-collector.yaml;
   };
 }
