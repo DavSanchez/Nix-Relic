@@ -14,28 +14,31 @@ This is a collection of some observability tools from New Relic packaged as Nix 
 ### New Relic Infrastructure Agent
 
 ```sh
-nix shell .#infrastructure-agent
+# Make it available in your shell
+nix shell github:DavSanchez/Nix-Relic#infrastructure-agent
 
 # or build the package and find the outputs in ./result
-nix build .#infrastructure-agent
+nix build github:DavSanchez/Nix-Relic#infrastructure-agent
 ```
 
 ### OpenTelemetry Collector Builder (OCB)
 
 ```sh
-nix shell .#ocb
+# Make it available in your shell
+nix shell github:DavSanchez/Nix-Relic#ocb
 
 # or build the package and find the outputs in ./result
-nix build .#ocb
+nix build github:DavSanchez/Nix-Relic#ocb
 ```
 
 ### New Relic Distribution for Open Telemetry Collector
 
 ```sh
-nix shell .#nr-otel-collector
+# Make it available in your shell
+nix shell github:DavSanchez/Nix-Relic#nr-otel-collector
 
 # or build the package and find the outputs in ./result
-nix build .#nr-otel-collector
+nix build github:DavSanchez/Nix-Relic#nr-otel-collector
 ```
 
 ## Available modules
