@@ -9,6 +9,23 @@
 
 This is a collection of some infrastructure observability tools from New Relic packaged as Nix Flakes and accompanied by NixOS and nix-darwin modules.
 
+## Usage as a flake (with FlakeHub)
+
+[![FlakeHub](https://img.shields.io/endpoint?url=https://flakehub.com/f/DavSanchez/Nix-Relic/badge)](https://flakehub.com/flake/DavSanchez/Nix-Relic)
+
+Add Nix-Relic to your `flake.nix`:
+
+```nix
+{
+  inputs.Nix-Relic.url = "https://flakehub.com/f/DavSanchez/Nix-Relic/*.tar.gz";
+
+  outputs = { self, Nix-Relic }: {
+    # Use in your outputs
+  };
+}
+
+```
+
 ## Available packages
 
 ### New Relic Infrastructure Agent
