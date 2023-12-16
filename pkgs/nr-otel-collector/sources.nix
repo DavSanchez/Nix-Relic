@@ -7,7 +7,7 @@
   ocb,
 }: let
   distName = "nr-otel-collector";
-  distVersion = "0.4.0";
+  distVersion = "0.5.0";
 in
   stdenv.mkDerivation {
     name = "collector-dist-${distVersion}";
@@ -15,7 +15,7 @@ in
       owner = "newrelic";
       repo = "opentelemetry-collector-releases";
       rev = "nr-otel-collector-${distVersion}";
-      hash = "sha256-fGcH7rOVqnb0wG1i1lh81eU1/OHqf3/rVdAbCewwhNo=";
+      hash = "sha256-h6qxPDdKkyX8/GhOm/V/RfexnV/mbwmQ2hhFJDOXQaY=";
     };
     nativeBuildInputs = with pkgs; [gnumake go] ++ [ocb];
     buildPhase = ''
@@ -33,5 +33,5 @@ in
     '';
     outputHashAlgo = "sha256";
     outputHashMode = "recursive";
-    outputHash = "sha256-CCmnkPXF6JhUH0Olrv9YQd2cY1gsQ9zcUv9u4Ba3j94=";
+    outputHash = "sha256-8mgMqZfSEsOY5gzAk1SA1IwHXPpAWEkfxQObaHHmJbg=";
   }
