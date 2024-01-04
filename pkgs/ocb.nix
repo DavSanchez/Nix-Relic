@@ -22,11 +22,12 @@ buildGoModule rec {
 
   nativeBuildInputs = with pkgs; [
     gnumake
+    bash
   ];
 
   buildPhase = ''
     runHook preBuild
-    
+
     make ocb
 
     runHook postBuild
