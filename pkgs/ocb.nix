@@ -28,7 +28,7 @@ buildGoModule rec {
   buildPhase = ''
     runHook preBuild
 
-    make ocb
+    make SHELL=${pkgs.bash}/bin/bash ocb
 
     runHook postBuild
   '';
