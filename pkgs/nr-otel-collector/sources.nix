@@ -27,7 +27,7 @@ in
       make generate-sources
     '';
     installPhase = ''
-      # Remove log files as they make the build non-reproducible (contain dates)
+      # Remove log files as they make the build non-reproducible (contains dates)
       rm -rf distributions/nr-otel-collector/_build/build.log
       cp -r distributions/nr-otel-collector/_build/ $out
     '';
