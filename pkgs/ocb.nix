@@ -7,18 +7,18 @@
 }:
 buildGoModule rec {
   pname = "ocb";
-  version = "0.86.0";
+  version = "0.91.0";
   modRoot = "cmd/builder";
 
   src = fetchFromGitHub {
     owner = "open-telemetry";
     repo = "opentelemetry-collector";
     rev = "cmd/builder/v${version}";
-    hash = "sha256-Ucp00OjyPtHA6so/NOzTLtPSuhXwz6A2708w2WIZb/E=";
+    hash = "sha256-PHxQD+9cJGfCE6Cr7nYKt5n2lrTzIfUdsLvkprlNNBg=";
     fetchSubmodules = true;
   };
 
-  vendorHash = "sha256-MTwD9xkrq3EudppLSoONgcPCBWlbSmaODLH9NtYgVOk=";
+  vendorHash = "sha256-qhX5qwb/NRG8Tf2z048U6a8XysI2bJlUtUF+hfBtx4Q=";
 
   nativeBuildInputs = with pkgs; [
     gnumake
