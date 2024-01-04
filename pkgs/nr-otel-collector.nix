@@ -2,23 +2,26 @@
   pkgs,
   stdenv,
   fetchFromGitHub,
-  ocb
+  ocb,
 }:
-stdenv.mkDerivation {
+stdenv.mkDerivation rec {
   name = "nr-otel-collector";
+  version = "0.6.0";
   src = fetchFromGitHub {
     owner = "newrelic";
     repo = "opentelemetry-collector-releases";
-    rev = "nr-otel-collector-0.5.0";
-    hash = "sha256-h6qxPDdKkyX8/GhOm/V/RfexnV/mbwmQ2hhFJDOXQaY=";
+    rev = "nr-otel-collector-${version}";
+    hash = "sha256-gSyYM4ryI4c48toAEXC1YtKCNXzAwWRHx7enjMZii+4=";
   };
 
-  nativeBuildInputs = with pkgs; [
-    gnumake
-    go
-  ] ++ [
-    ocb
-  ];
+  nativeBuildInputs = with pkgs;
+    [
+      gnumake
+      go
+    ]
+    ++ [
+      ocb
+    ];
 
   buildPhase = ''
     # script run by make needs the correct bash location
