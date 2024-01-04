@@ -5,7 +5,7 @@
   fetchFromGitHub,
 }:
 buildGoModule rec {
-  pname = "infrastructure-agent";
+  name = "infrastructure-agent";
   version = "1.48.3";
 
   src = fetchFromGitHub {

@@ -6,7 +6,7 @@
   fetchFromGitHub,
 }:
 buildGoModule rec {
-  pname = "ocb";
+  name = "ocb";
   version = "0.91.0";
   modRoot = "cmd/builder";
 
@@ -37,7 +37,7 @@ buildGoModule rec {
     runHook preInstall
 
     mkdir -p $out/bin
-    cp ../../bin/ocb_${go.GOOS}_${go.GOARCH} $out/bin/${pname}
+    cp ../../bin/ocb_${go.GOOS}_${go.GOARCH} $out/bin/${name}
 
     runHook postInstall
   '';
