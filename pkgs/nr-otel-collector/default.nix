@@ -7,7 +7,7 @@
   ocb,
 }: let
   distName = "nr-otel-collector";
-  distVersion = "0.5.0";
+  distVersion = "0.6.0";
   generated-sources = pkgs.callPackage ./sources.nix {inherit ocb;};
 in
   buildGoModule {
@@ -16,15 +16,16 @@ in
 
     src = generated-sources;
 
-    vendorHash = "sha256-75HGTKvmPpvrnJmZzuGscbDJQAvPid3W6VJogfa4ZWs=";
+    vendorHash = "sha256-XC7Nd/Vgq0AmG5O7fANVKH+r719SVO485+LH/cHtDQA=";
 
     ldflags = [
       "-s"
       "-w"
     ];
-    doCheck = false; # FIXME: --- FAIL: TestValidateConfigs (components_test.go:32)
 
     CGO_ENABLED = "0";
+
+    doCheck = false; # FIXME: --- FAIL: TestValidateConfigs (components_test.go:32)
 
     meta = with lib; {
       description = "The New Relic distribution of the OpenTelemetry Collector";

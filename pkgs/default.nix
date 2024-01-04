@@ -3,8 +3,8 @@
   infrastructure-agent = pkgs.callPackage ./infrastructure-agent.nix {};
   ocb = pkgs.callPackage ./ocb.nix {};
 
-  # nr-otel-collector needs a specific version of ocb at this moment, hence this hack
-  nr-otel-collector = pkgs.callPackage ./nr-otel-collector.nix {
+  nr-otel-collector = pkgs.callPackage ./nr-otel-collector {
+    # nr-otel-collector needs a specific version of ocb at this moment, hence this hack
     ocb = let
       version = "0.86.0";
       src = pkgs.fetchFromGitHub {
