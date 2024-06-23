@@ -53,5 +53,5 @@ jobs:
           # If you chose API tokens for write access OR if you have a private cache
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
-      - name: Build {{ matrix.pkg }} with Nix
-        run: nix build --print-out-paths ".#{{ matrix.pkg }}"
+      - name: Build ${{ matrix.pkg }} with Nix
+        run: nix build --print-out-paths ".#${{ matrix.pkg }}"
