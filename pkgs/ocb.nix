@@ -1,53 +1,44 @@
 {
   lib,
-  pkgs,
-  go,
   buildGoModule,
   fetchFromGitHub,
 }:
 buildGoModule rec {
   pname = "ocb";
-  version = "0.91.0";
-  modRoot = "cmd/builder";
+  version = "0.101.0";
 
   src = fetchFromGitHub {
     owner = "open-telemetry";
     repo = "opentelemetry-collector";
     rev = "cmd/builder/v${version}";
-    hash = "sha256-PHxQD+9cJGfCE6Cr7nYKt5n2lrTzIfUdsLvkprlNNBg=";
-    fetchSubmodules = true;
+    hash = "sha256-Ucp00OjyPtHA6so/NOzTLtPSuhXwz6A2708w2WIZb/E=";
   };
 
-  vendorHash = "sha256-qhX5qwb/NRG8Tf2z048U6a8XysI2bJlUtUF+hfBtx4Q=";
+  sourceRoot = "${src.name}/cmd/builder";
+  vendorHash = "sha256-MTwD9xkrq3EudppLSoONgcPCBWlbSmaODLH9NtYgVOk=";
 
-  nativeBuildInputs = with pkgs; [
-    gnumake
-    bash
+  GOFLAGS = [ "-trimpath" ];
+  CGO_ENABLED = 0;
+  ldflags = [
+    "-s"
+    "-w"
+    "-X go.opentelemetry.io/collector/cmd/builder/internal.version=${version}"
   ];
 
-  buildPhase = ''
-    runHook preBuild
+  # The TestGenerateAndCompile tests download new dependencies for a modified go.mod. Nix doesn't allow network access so skipping.
+  checkFlags = [ "-skip TestGenerateAndCompile" ];
 
-    make SHELL=${pkgs.bash}/bin/bash ocb
-
-    runHook postBuild
+  # Rename the to ocb (it's generated as "builder")
+  postInstall = ''
+    mv $out/bin/builder $out/bin/ocb
   '';
 
-  installPhase = ''
-    runHook preInstall
-
-    mkdir -p $out/bin
-    cp ../../bin/ocb_${go.GOOS}_${go.GOARCH} $out/bin/${pname}
-
-    runHook postInstall
-  '';
-
-  meta = with lib; {
+  meta = {
     description = "OpenTelemetry Collector";
     homepage = "https://github.com/open-telemetry/opentelemetry-collector.git";
     changelog = "https://github.com/open-telemetry/opentelemetry-collector/blob/${src.rev}/CHANGELOG.md";
-    license = licenses.asl20;
-    maintainers = with maintainers; [DavSanchez];
+    license = lib.licenses.asl20;
+    maintainers = with lib.maintainers; [ DavSanchez ];
     mainProgram = "ocb";
   };
 }
