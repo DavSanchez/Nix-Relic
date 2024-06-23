@@ -46,7 +46,7 @@ buildGoModule {
     }
   );
 
-  vendorHash = lib.fakeHash;
+  vendorHash = "sha256-AXDG9+kYGxyKhBAY+oXqReiBS9hZNoNp16pmCvyePDs=";
 
   postConfigure = ''
     # At this point the `vendor` directory also containing the
