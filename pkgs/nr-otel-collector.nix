@@ -50,9 +50,13 @@ buildGoModule {
 
   postConfigure = ''
     # At this point the `vendor` directory also containing the
-    # generated sources has been placed.
-    # Move to the directory that contains the sources
-    cp -r vendor/${generatedDistDir}/* .
+    # generated sources has been placed (which also contains vendor!)
+    # Remove the inner vendor directory and copy the sources into
+    # the working directory
+    # FIXME 
+    chmod -R u+w vendor/${generatedDistDir}/vendor 
+    rm -rf vendor/${generatedDistDir}/vendor
+    cp -r vendor/${generatedDistDir}/* ./
   '';
 
   ldflags = [
