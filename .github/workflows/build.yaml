@@ -6,7 +6,7 @@ on:
   push:
     branches: [master]
 jobs:
-  checks:
+  check-build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
