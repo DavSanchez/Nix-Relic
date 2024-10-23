@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        pkg: [infrastructure-agent, ocb, nr-otel-collector]
+        pkg: [infrastructure-agent, nr-otel-collector]
 
     steps:
       - uses: actions/checkout@v4
