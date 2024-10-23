@@ -27,7 +27,7 @@ buildGoModule rec {
   };
 
   # Generate the distribution sources
-  preConfigure = ''
+  postPatch = ''
     patchShebangs ./scripts/build.sh
 
     export HOME=$TMPDIR
