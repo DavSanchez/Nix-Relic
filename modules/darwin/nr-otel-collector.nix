@@ -3,17 +3,26 @@
   pkgs,
   config,
   ...
-}: let
-  inherit (lib) mkEnableOption mkIf mkOption types mdDoc getExe;
+}:
+let
+  inherit (lib)
+    mkEnableOption
+    mkIf
+    mkOption
+    types
+    mdDoc
+    getExe
+    ;
   cfg = config.services.nr-otel-collector;
-  settingsFormat = pkgs.formats.yaml {};
-in {
+  settingsFormat = pkgs.formats.yaml { };
+in
+{
   options.services.nr-otel-collector = {
     enable = mkEnableOption "New Relic distribution for OpenTelemetry Collector service";
 
     settings = mkOption {
       type = settingsFormat.type;
-      default = {};
+      default = { };
       description = mdDoc ''
         Specify the configuration for Opentelemetry Collector in Nix.
 
@@ -42,21 +51,27 @@ in {
   };
 
   config = mkIf cfg.enable {
-    launchd.daemons.nr-otel-collector = let
-      conf =
-        if cfg.configFile == null
-        then settingsFormat.generate "config.yaml" cfg.settings
-        else cfg.configFile;
-    in {
-      # path = [ pkgs.nr-otel-collector pkgs.ps ];
+    launchd.daemons.nr-otel-collector =
+      let
+        conf =
+          if cfg.configFile == null then
+            settingsFormat.generate "config.yaml" cfg.settings
+          else
+            cfg.configFile;
+      in
+      {
+        # path = [ pkgs.nr-otel-collector pkgs.ps ];
 
-      serviceConfig = {
-        ProgramArguments = [ "${getExe pkgs.nr-otel-collector}" "--config=file:${conf}" ];
-        KeepAlive = true;
-        RunAtLoad = true;
-        StandardErrorPath = cfg.errLogFile;
-        StandardOutPath = cfg.logFile;
+        serviceConfig = {
+          ProgramArguments = [
+            "${getExe pkgs.nr-otel-collector}"
+            "--config=file:${conf}"
+          ];
+          KeepAlive = true;
+          RunAtLoad = true;
+          StandardErrorPath = cfg.errLogFile;
+          StandardOutPath = cfg.logFile;
+        };
       };
-    };
   };
 }
