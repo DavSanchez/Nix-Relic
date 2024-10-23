@@ -7,12 +7,22 @@
 }:
 let
   pinnedOcbVersion = opentelemetry-collector-builder.override {
-    buildGoModule = previousArgs: pkgs.buildGoModule (previousArgs // {
-      version = "0.108.0";
-      src = previousArgs.src // {
-        sha256 = lib.fakeSha256;
-      };
-    });
+    buildGoModule =
+      previousArgs:
+      buildGoModule (
+        previousArgs
+        // rec {
+          version = "0.108.0";
+          src = fetchFromGitHub {
+            owner = "open-telemetry";
+            repo = "opentelemetry-collector";
+            rev = "cmd/builder/v${version}";
+            sha256 = "sha256-hLC9vB+xAwSuqaO1h3qPPofUTa+L2Mdh6xXHq2bBSFc=";
+            fetchSubmodules = true;
+          };
+          vendorHash = "sha256-5lXa99nH2yDxd1MHUCqG9o7bEK6/Ia40kvnm+67VTNU=";
+        }
+      );
   };
 in
 buildGoModule rec {
@@ -27,7 +37,7 @@ buildGoModule rec {
   };
 
   # Generate the distribution sources
-  postPatch = ''
+  preConfigure = ''
     patchShebangs ./scripts/build.sh
 
     export HOME=$TMPDIR
