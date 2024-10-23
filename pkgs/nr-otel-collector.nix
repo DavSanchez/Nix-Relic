@@ -18,7 +18,6 @@ let
             repo = "opentelemetry-collector";
             rev = "cmd/builder/v${version}";
             sha256 = "sha256-hLC9vB+xAwSuqaO1h3qPPofUTa+L2Mdh6xXHq2bBSFc=";
-            fetchSubmodules = true;
           };
           vendorHash = "sha256-5lXa99nH2yDxd1MHUCqG9o7bEK6/Ia40kvnm+67VTNU=";
         }
