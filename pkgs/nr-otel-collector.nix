@@ -6,19 +6,21 @@
   opentelemetry-collector-builder,
 }:
 let
-  pinnedOcbVersion = opentelemetry-collector-builder.override {
+  pinnedOcbVersion = "0.108.0";
+  pinnedOcbSrc = fetchFromGitHub {
+    owner = "open-telemetry";
+    repo = "opentelemetry-collector";
+    rev = "cmd/builder/v${pinnedOcbVersion}";
+    sha256 = "sha256-hLC9vB+xAwSuqaO1h3qPPofUTa+L2Mdh6xXHq2bBSFc=";
+  };
+  pinnedOcb = opentelemetry-collector-builder.override {
     buildGoModule =
-      previousArgs:
+      args:
       buildGoModule (
-        previousArgs
-        // rec {
-          version = "0.108.0";
-          src = fetchFromGitHub {
-            owner = "open-telemetry";
-            repo = "opentelemetry-collector";
-            rev = "cmd/builder/v${version}";
-            sha256 = "sha256-hLC9vB+xAwSuqaO1h3qPPofUTa+L2Mdh6xXHq2bBSFc=";
-          };
+        args
+        // {
+          version = pinnedOcbVersion;
+          src = pinnedOcbSrc;
           vendorHash = "sha256-5lXa99nH2yDxd1MHUCqG9o7bEK6/Ia40kvnm+67VTNU=";
         }
       );
@@ -42,7 +44,7 @@ buildGoModule rec {
     export HOME=$TMPDIR
     chmod -R u+w .
 
-    ./scripts/build.sh -d "nr-otel-collector" -s true -b "${pinnedOcbVersion}/bin/ocb" -g "${pkgs.go}/bin/go"
+    ./scripts/build.sh -d "nr-otel-collector" -s true -b "${pinnedOcb}/bin/ocb" -g "${pkgs.go}/bin/go"
   '';
 
   # The generated distribution sources end up in this location.
