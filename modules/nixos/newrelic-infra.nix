@@ -3,19 +3,27 @@
   pkgs,
   config,
   ...
-}: let
-  inherit (lib) mkEnableOption mkIf mkOption types mdDoc;
+}:
+let
+  inherit (lib)
+    mkEnableOption
+    mkIf
+    mkOption
+    types
+    mdDoc
+    ;
 
   cfg = config.services.newrelic-infra;
-  settingsFormat = pkgs.formats.yaml {};
-in {
+  settingsFormat = pkgs.formats.yaml { };
+in
+{
   options.services.newrelic-infra = {
     enable = lib.mkEnableOption "newrelic-infra service";
     # TODO: withIntegrations = [ drv drv ... ];
 
     settings = mkOption {
       type = settingsFormat.type;
-      default = {};
+      default = { };
       description = mdDoc ''
         Specify the configuration for the Infra Agent in Nix.
 
@@ -41,27 +49,30 @@ in {
         "network.target"
       ];
 
-      serviceConfig = let
-        conf =
-          if cfg.configFile == null
-          then settingsFormat.generate "config.yaml" cfg.settings
-          else cfg.configFile;
-      in {
-        RuntimeDirectory = "newrelic-infra";
-        Type = "simple";
-        ExecStart = "${pkgs.infrastructure-agent}/bin/newrelic-infra-service -config ${conf}";
-        MemoryMax = "1G";
-        Restart = "always";
-        RestartSec = 20;
-        PIDFile = "/run/newrelic-infra/newrelic-infra.pid";
-      };
+      serviceConfig =
+        let
+          conf =
+            if cfg.configFile == null then
+              settingsFormat.generate "config.yaml" cfg.settings
+            else
+              cfg.configFile;
+        in
+        {
+          RuntimeDirectory = "newrelic-infra";
+          Type = "simple";
+          ExecStart = "${pkgs.infrastructure-agent}/bin/newrelic-infra-service -config ${conf}";
+          MemoryMax = "1G";
+          Restart = "always";
+          RestartSec = 20;
+          PIDFile = "/run/newrelic-infra/newrelic-infra.pid";
+        };
 
       unitConfig = {
         StartLimitInterval = 0;
         StartLimitBurst = 5;
       };
 
-      wantedBy = ["multi-user.target"];
+      wantedBy = [ "multi-user.target" ];
     };
   };
 }

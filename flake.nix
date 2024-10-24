@@ -21,6 +21,8 @@
     {
       packages = forAllSystems (system: import ./pkgs { pkgs = nixpkgs.legacyPackages.${system}; });
 
+      formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-rfc-style);
+
       nixosModules = import ./modules/nixos;
 
       darwinModules = import ./modules/darwin;

@@ -6,11 +6,12 @@ on:
   push:
     branches: [master]
 jobs:
-  checks:
+  check-build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+        pkg: [infrastructure-agent, nr-otel-collector]
 
     steps:
       - uses: actions/checkout@v4
@@ -29,29 +30,6 @@ jobs:
 
       - name: Run Nix checks
         run: nix flake check
-  
-  build:
-    needs: [checks]
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-        pkg: [infrastructure-agent, ocb, nr-otel-collector]
-    
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Nix
-        uses: cachix/install-nix-action@v27
-        with:
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Enable binary cache with Cachix
-        uses: cachix/cachix-action@v15
-        with:
-          name: nix-relic
-          # If you chose API tokens for write access OR if you have a private cache
-          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
       - name: Build ${{ matrix.pkg }} with Nix
         run: nix build --print-out-paths ".#${{ matrix.pkg }}"
