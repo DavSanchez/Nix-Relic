@@ -25,7 +25,7 @@ buildGoModule {
   # The TestGenerateAndCompile tests download new dependencies for a modified go.mod. Nix doesn't allow network access so skipping.
   checkFlags = [ "-skip TestValidateConfigs" ];
 
-  CGO_ENABLED = "0";
+  env.CGO_ENABLED = "0";
 
   meta = with lib; {
     description = "The New Relic distribution of the OpenTelemetry Collector";
