@@ -18,7 +18,7 @@ buildGoModule rec {
   vendorHash = "sha256-MTwD9xkrq3EudppLSoONgcPCBWlbSmaODLH9NtYgVOk=";
 
   GOFLAGS = [ "-trimpath" ];
-  CGO_ENABLED = 0;
+  env.CGO_ENABLED = 0;
   ldflags = [
     "-s"
     "-w"
