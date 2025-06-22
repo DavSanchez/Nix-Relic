@@ -28,7 +28,7 @@ jobs:
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
       - name: Run Nix checks
-        run: nix flake check
+        run: nix flake check -L
   
   build:
     needs: [checks]
@@ -57,5 +57,5 @@ jobs:
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
       - name: Build ${{ matrix.pkg }} with Nix
-        run: nix build --print-out-paths ".#${{ matrix.pkg }}"
+        run: nix build -L --print-out-paths ".#${{ matrix.pkg }}"
 
