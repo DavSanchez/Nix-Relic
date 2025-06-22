@@ -1,10 +1,12 @@
 {
   lib,
-  buildGoModule,
+  stdenv,
   fetchFromGitHub,
+  go,
 }:
 
-buildGoModule rec {
+stdenv.mkDerivation rec {
+
   pname = "newrelic-fluent-bit-output";
   version = "2.4.0";
 
@@ -15,13 +17,22 @@ buildGoModule rec {
     hash = "sha256-ODbAmC+O0LbO4CZJQRw8rzzMM1hC1dx8iB/y9mmEiNk=";
   };
 
-  vendorHash = null;
+  nativeBuildInputs = [ go ];
 
-  env.CGO_ENABLED = 1;
+  checkPhase = ''
+    go test ./...
+  '';
 
-  ldflags = [
-    "-buildmode=c-shared"
-  ];
+  buildPhase = ''
+    export HOME=$(mktemp -d)
+    export CGO_ENABLED=1
+    go build -buildmode=c-shared -o ${pname}.so .
+  '';
+
+  installPhase = ''
+    mkdir -p $out/lib
+    cp ${pname}.so $out/lib/
+  '';
 
   meta = {
     description = "A Fluent Bit output plugin that sends logs to New Relic";
