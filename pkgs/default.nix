@@ -1,6 +1,8 @@
 # You can build the below packages using 'nix build .#example'
 {pkgs}: rec {
   infrastructure-agent = pkgs.callPackage ./infrastructure-agent.nix {};
+  newrelic-fluent-bit-output = pkgs.callPackage ./newrelic-fluent-bit-output.nix {};
+  
   ocb = pkgs.callPackage ./ocb.nix {};
 
   nr-otel-collector = pkgs.callPackage ./nr-otel-collector {
