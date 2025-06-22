@@ -17,6 +17,8 @@ buildGoModule rec {
 
   vendorHash = null;
 
+  env.CGO_ENABLED = 1;
+
   ldflags = [
     "-buildmode=c-shared"
   ];
