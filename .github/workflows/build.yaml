@@ -21,7 +21,7 @@ jobs:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Enable binary cache with Cachix
-        uses: cachix/cachix-action@v15
+        uses: cachix/cachix-action@v16
         with:
           name: nix-relic
           # If you chose API tokens for write access OR if you have a private cache
@@ -47,7 +47,7 @@ jobs:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Enable binary cache with Cachix
-        uses: cachix/cachix-action@v15
+        uses: cachix/cachix-action@v16
         with:
           name: nix-relic
           # If you chose API tokens for write access OR if you have a private cache
