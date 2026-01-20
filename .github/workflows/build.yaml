@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v5
@@ -28,7 +28,7 @@ jobs:
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
       - name: Run Nix checks
-        run: nix flake check
+        run: nix flake check -L
   
   build:
     needs: [checks]
@@ -37,6 +37,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         pkg: [infrastructure-agent, ocb, nr-otel-collector]
+        include:
+        - os: ubuntu-latest
+          pkg: newrelic-fluent-bit-output
     
     steps:
       - uses: actions/checkout@v5
@@ -54,4 +57,5 @@ jobs:
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
       - name: Build ${{ matrix.pkg }} with Nix
-        run: nix build --print-out-paths ".#${{ matrix.pkg }}"
+        run: nix build -L --print-out-paths ".#${{ matrix.pkg }}"
+
