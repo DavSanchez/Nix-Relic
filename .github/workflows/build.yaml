@@ -13,7 +13,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Install Nix
         uses: cachix/install-nix-action@v31
@@ -39,7 +39,7 @@ jobs:
         pkg: [infrastructure-agent, ocb, nr-otel-collector]
     
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Install Nix
         uses: cachix/install-nix-action@v31
