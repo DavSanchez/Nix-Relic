@@ -13,7 +13,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Install Nix
         uses: cachix/install-nix-action@v31
@@ -21,7 +21,7 @@ jobs:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Enable binary cache with Cachix
-        uses: cachix/cachix-action@v16
+        uses: cachix/cachix-action@v17
         with:
           name: nix-relic
           # If you chose API tokens for write access OR if you have a private cache
@@ -29,7 +29,7 @@ jobs:
 
       - name: Run Nix checks
         run: nix flake check
-  
+
   build:
     needs: [checks]
     runs-on: ${{ matrix.os }}
@@ -37,9 +37,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         pkg: [infrastructure-agent, ocb, nr-otel-collector]
-    
+
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Install Nix
         uses: cachix/install-nix-action@v31
@@ -47,7 +47,7 @@ jobs:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Enable binary cache with Cachix
-        uses: cachix/cachix-action@v16
+        uses: cachix/cachix-action@v17
         with:
           name: nix-relic
           # If you chose API tokens for write access OR if you have a private cache
