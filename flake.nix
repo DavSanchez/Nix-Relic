@@ -19,7 +19,17 @@
       forAllSystems = nixpkgs.lib.genAttrs systems;
     in
     {
-      packages = forAllSystems (system: import ./pkgs { pkgs = nixpkgs.legacyPackages.${system}; });
+      packages = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          ourPackages = import ./pkgs { inherit pkgs; };
+        in
+        if pkgs.stdenv.hostPlatform.isLinux then
+          ourPackages
+        else
+          builtins.removeAttrs ourPackages [ "newrelic-fluent-bit-output" ]
+      );
 
       nixosModules = import ./modules/nixos;
 
@@ -27,10 +37,7 @@
 
       overlays = import ./overlays { inherit inputs; };
 
-      formatter = forAllSystems (
-        system:
-        nixpkgs.legacyPackages.${system}.nixfmt
-      );
+      formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt);
 
       devShells = forAllSystems (
         system:
