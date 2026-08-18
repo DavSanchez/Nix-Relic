@@ -1,6 +1,5 @@
 {
   lib,
-  stdenv,
   buildGoModule,
   fetchFromGitHub,
 }:
@@ -24,7 +23,7 @@ buildGoModule rec {
     "-X main.gitCommit=${src.rev}"
   ];
 
-  env.CGO_ENABLED = if stdenv.hostPlatform.isDarwin then "1" else "0";
+  # CGO is enabled by default on Darwin and disabled elsewhere by buildGoModule
 
   subPackages = [
     "cmd/newrelic-infra"
