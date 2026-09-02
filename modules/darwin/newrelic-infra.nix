@@ -3,17 +3,27 @@
   pkgs,
   config,
   ...
-}: let
-  inherit (lib) mkEnableOption mkIf mkOption types mdDoc;
+}:
+let
+  inherit (lib)
+    mkEnableOption
+    mkIf
+    mkOption
+    types
+    mdDoc
+    ;
   cfg = config.services.newrelic-infra;
-  settingsFormat = pkgs.formats.yaml {};
-in {
+  settingsFormat = pkgs.formats.yaml { };
+in
+{
   options.services.newrelic-infra = {
     enable = mkEnableOption "newrelic-infra service";
 
+    package = lib.mkPackageOption pkgs "infrastructure-agent" { };
+
     settings = mkOption {
       type = settingsFormat.type;
-      default = {};
+      default = { };
       description = mdDoc ''
         Specify the configuration for the Infra Agent in Nix.
 
@@ -42,21 +52,28 @@ in {
   };
 
   config = mkIf cfg.enable {
-    launchd.daemons.newrelic-infra = let
-      conf =
-        if cfg.configFile == null
-        then settingsFormat.generate "config.yaml" cfg.settings
-        else cfg.configFile;
-    in {
-      path = [ pkgs.infrastructure-agent ];
+    launchd.daemons.newrelic-infra =
+      let
+        conf =
+          if cfg.configFile == null then
+            settingsFormat.generate "config.yaml" cfg.settings
+          else
+            cfg.configFile;
+      in
+      {
+        path = [ cfg.package ];
 
-      serviceConfig = {
-        ProgramArguments = [ "${pkgs.infrastructure-agent}/bin/newrelic-infra-service" "-config" "${conf}" ];
-        KeepAlive = true;
-        RunAtLoad = true;
-        StandardErrorPath = cfg.errLogFile;
-        StandardOutPath = cfg.logFile;
+        serviceConfig = {
+          ProgramArguments = [
+            "${cfg.package}/bin/newrelic-infra-service"
+            "-config"
+            "${conf}"
+          ];
+          KeepAlive = true;
+          RunAtLoad = true;
+          StandardErrorPath = cfg.errLogFile;
+          StandardOutPath = cfg.logFile;
+        };
       };
-    };
   };
 }

@@ -1,4 +1,3 @@
-
 [<img src="./nix-relic.png" alt="logo" width="200">](https://github.com/DavSanchez/Nix-Relic)
 
 # Nix Relic
@@ -15,107 +14,220 @@ Add Nix-Relic to your `flake.nix`:
 
 ```nix
 {
-  nix-relic.url = "github:DavSanchez/Nix-Relic"
+  inputs.nix-relic.url = "github:DavSanchez/Nix-Relic";
   # and, optionally
   # nix-relic.inputs.nixpkgs.follows = "nixpkgs";
 
-  outputs = { self, Nix-Relic }: {
-    # Use in your outputs with one of the two commented options below
-    nixosConfigurations = {
-        my-host = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = {
-            # This makes the modules available from `imports` on your configuration file
-            inherit inputs;
-          };
-          modules = [ 
-            ./path/to/my-host/configuration.nix
-            # Or you can add the module directly here to expose the options
-            inputs.nix-relic.nixosModules.newrelic-infra
-          ];
-        };
-      };
+  outputs = { self, nix-relic, nixpkgs }: {
+    nixosConfigurations.my-host = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        # The modules reference packages that are not in nixpkgs, so the
+        # overlay is required.
+        { nixpkgs.overlays = [ nix-relic.overlays.additions ]; }
+        nix-relic.nixosModules.newrelic-infra
+      ];
+    };
   };
 }
 ```
-
-## Available modules
 
 ### Adding the packages from `nix-relic`'s overlay
 
-It might be possible that the modules defined here reference packages that are not yet present
-in `nixpkgs`. At the time of writing this, this is the case for the
-New Relic distribution for the OpenTelemetry Collector (package `nr-otel-collector`).
+The NixOS modules reference packages that are not yet present in `nixpkgs`
+(`nri-flex`, `newrelic-fluent-bit-output`, `nrdot-collector`). The
+`infrastructure-agent` package itself is provided by nixpkgs.
 
-If you encounter this problem, add this flake's default overlay to your `nixpkgs.overlays` config.
-Assuming you have named this flake input as `nix-relic`:
+Add this flake's default overlay to your `nixpkgs.overlays` config:
 
 ```nix
 {
-  nixpkgs = {
-    overlays = [
-      inputs.nix-relic.overlays.additions
-    ];
-  };
+  nixpkgs.overlays = [ inputs.nix-relic.overlays.additions ];
 }
 ```
 
-### NixOS
+## Available packages
 
-#### Infrastructure agent `systemd` service
+### `infrastructure-agent`
+
+Provided by nixpkgs as `pkgs.infrastructure-agent`. You can build it directly:
+
+```sh
+nix shell nixpkgs#infrastructure-agent
+```
+
+### `nri-flex`
+
+A standalone integration runner (e.g. for S.M.A.R.T. monitoring):
+
+```sh
+nix shell github:DavSanchez/Nix-Relic#nri-flex
+```
+
+### `newrelic-fluent-bit-output` (Linux only)
+
+The Fluent Bit output plugin (`out_newrelic.so`) required by the infra agent's
+log forwarding:
+
+```sh
+nix shell github:DavSanchez/Nix-Relic#newrelic-fluent-bit-output
+```
+
+### `nrdot-collector`
+
+The New Relic distribution of the OpenTelemetry Collector:
+
+```sh
+nix shell github:DavSanchez/Nix-Relic#nrdot-collector
+```
+
+## NixOS modules
+
+### `services.newrelic-infra`
+
+Starts the New Relic Infrastructure Agent as a `systemd` service.
 
 ```nix
 {
   services.newrelic-infra = {
     enable = true;
-    # Beware of including license keys to the file defined below!
-    # The file will end up added in plain text to the Nix Store.
-    # Use encryption tools like `agenix` or `sops-nix` to handle this in a secure manner.
+    # Beware of including license keys in the file defined below!
+    # The file will end up in plain text in the Nix Store.
+    # Use encryption tools like `agenix` or `sops-nix` to handle this securely.
     configFile = ./newrelic-infra.yml;
   };
 }
 ```
 
-#### Use the New Relic Distribution for OpenTelemetry Collector
-
-A module for setting up an OpenTelemetry collector is already provided by NixOS,
-we only need to change it so it uses our New Relic Distribution package:
-
-```nix
-{
-  services.opentelemetry-collector = {
-    enable = true;
-    package = pkgs.nr-otel-collector; # Here!
-    configFile = ./nr-otel-collector.yaml;
-  };
-}
-```
-
-### Darwin (macOS)
-
-#### Infrastructure agent `launchd` daemon
+Instead of a file, you can declare the configuration in Nix:
 
 ```nix
 {
   services.newrelic-infra = {
     enable = true;
-    # Beware of including license keys to the file defined below!
-    # The file will end up added in plain text to the Nix Store.
-    # Use encryption tools like `agenix` or `sops-nix` to handle this in a secure manner.
-    configFile = ./newrelic-infra.yml; 
+    settings = {
+      license_key = "your-ingest-license-key"; # better via agenix/sops-nix!
+    };
+  };
+}
+```
+
+#### Config file example
+
+The agent accepts a YAML configuration file. A minimal one looks like:
+
+```yaml
+# newrelic-infra.yml
+license_key: your-ingest-license-key
+log_level: info
+```
+
+For the full list of settings see the
+[Infrastructure Agent configuration settings](https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings).
+
+#### Log forwarding
+
+The agent can forward logs using its built-in Fluent Bit integration:
+
+```nix
+{
+  services.newrelic-infra = {
+    enable = true;
+    settings.license_key = "your-ingest-license-key"; # better via agenix/sops-nix!
+    logging = [
+      {
+        name = "my-app";
+        file = "/var/log/my-app.log";
+        attributes = { service.name = "my-app"; };
+      }
+    ];
+  };
+}
+```
+
+See the
+[Forward your logs using the infrastructure agent](https://docs.newrelic.com/docs/logs/forward-logs/forward-your-logs-using-infrastructure-agent/)
+documentation for the available log source fields.
+
+#### On-host integrations
+
+You can run integrations such as `nri-flex` from the agent:
+
+```nix
+{
+  services.newrelic-infra = {
+    enable = true;
+    settings.license_key = "your-ingest-license-key"; # better via agenix/sops-nix!
+    integrations = [
+      {
+        name = "flex";
+        package = pkgs.nri-flex;
+        config = {
+          integrations = [
+            { name = "smart"; }
+          ];
+        };
+      }
+    ];
+  };
+}
+```
+
+#### Options
+
+- `services.newrelic-infra.package` — the agent package (defaults to
+  `pkgs.infrastructure-agent`).
+- `services.newrelic-infra.settings` — the agent configuration as Nix.
+- `services.newrelic-infra.configFile` — an explicit configuration file.
+- `services.newrelic-infra.logging` — log sources to forward (see above).
+- `services.newrelic-infra.fluentBitPackage` — the Fluent Bit New Relic output
+  plugin package (defaults to `pkgs.newrelic-fluent-bit-output`).
+- `services.newrelic-infra.integrations` — on-host integrations to run.
+
+### `services.nrdot-collector`
+
+Starts the New Relic distribution of the OpenTelemetry Collector:
+
+```nix
+{
+  services.nrdot-collector = {
+    enable = true;
+    settings = {
+      extensions.health_check = {};
+      receivers.otlp.protocols.grpc.endpoint = "localhost:4317";
+      exporters.debug.verbosity = "basic";
+      service.extensions = [ "health_check" ];
+      service.pipelines.traces = {
+        receivers = [ "otlp" ];
+        exporters = [ "debug" ];
+      };
+    };
+  };
+}
+```
+
+## Darwin (macOS)
+
+### `services.newrelic-infra` — `launchd` daemon
+
+```nix
+{
+  services.newrelic-infra = {
+    enable = true;
+    configFile = ./newrelic-infra.yml; # use agenix/sops-nix for secrets!
     logFile = ./path/to/file.log;
     errLogFile = ./path/to/errfile.log;
   };
 }
 ```
 
-#### New Relic Distribution for OpenTelemetry Collector `launchd` daemon
+### `services.nrdot-collector` — `launchd` daemon
 
 ```nix
 {
-  services.nr-otel-collector = {
+  services.nrdot-collector = {
     enable = true;
-    configFile = ./nr-otel-collector.yml; 
+    configFile = ./nrdot-collector.yml;
     logFile = ./path/to/file.log;
     errLogFile = ./path/to/errfile.log;
   };
@@ -124,40 +236,31 @@ we only need to change it so it uses our New Relic Distribution package:
 
 ## Security
 
-Beware of including license keys to the files defined in the configs, such as the one passed to
-`services.newrelic-infra.configFile`. These files will end up added in plain text to the Nix Store.
+Beware of including license keys in the files defined in the configs, such as
+the one passed to `services.newrelic-infra.configFile` or `settings`. These
+files end up in plain text in the Nix Store.
 
-Use Nix secret management utilities like [`agenix`](https://github.com/ryantm/agenix)
-or [`sops-nix`](https://github.com/Mic92/sops-nix) to handle this securely.
+Use Nix secret management utilities like
+[`agenix`](https://github.com/ryantm/agenix) or
+[`sops-nix`](https://github.com/Mic92/sops-nix) to handle this securely.
 
-## Available packages
+## Development
 
-### New Relic Infrastructure Agent
+Run the full test suite (unit/eval tests, package smoke tests, and NixOS VM
+integration tests on Linux):
 
 ```sh
-# Make it available in your shell
-nix shell github:DavSanchez/Nix-Relic#infrastructure-agent
-
-# or build the package and find the outputs in ./result
-nix build github:DavSanchez/Nix-Relic#infrastructure-agent
+nix flake check
 ```
 
-### OpenTelemetry Collector Builder (OCB)
+Format the Nix code:
 
 ```sh
-# Make it available in your shell
-nix shell github:DavSanchez/Nix-Relic#ocb
-
-# or build the package and find the outputs in ./result
-nix build github:DavSanchez/Nix-Relic#ocb
+nix fmt
 ```
 
-### New Relic Distribution for OpenTelemetry Collector
+Open a dev shell with formatting and linting tools:
 
 ```sh
-# Make it available in your shell
-nix shell github:DavSanchez/Nix-Relic#nr-otel-collector
-
-# or build the package and find the outputs in ./result
-nix build github:DavSanchez/Nix-Relic#nr-otel-collector
+nix develop
 ```

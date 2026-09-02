@@ -36,7 +36,10 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        pkg: [nrdot-collector]
+        pkg: [nri-flex, nrdot-collector]
+        include:
+          - os: ubuntu-latest
+            pkg: newrelic-fluent-bit-output
 
     steps:
       - uses: actions/checkout@v7
