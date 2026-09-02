@@ -31,6 +31,15 @@
           builtins.removeAttrs ourPackages [ "newrelic-fluent-bit-output" ]
       );
 
+      checks = forAllSystems (
+        system:
+        import ./checks {
+          pkgs = nixpkgs.legacyPackages.${system};
+          inherit (nixpkgs) lib;
+          inherit inputs;
+        }
+      );
+
       nixosModules = import ./modules/nixos;
 
       darwinModules = import ./modules/darwin;
